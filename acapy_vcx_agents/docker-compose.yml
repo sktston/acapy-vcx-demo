@@ -1,0 +1,101 @@
+version: '3'
+
+services:
+  acapy-agent:
+    build:
+      context: https://github.com/sktston/aries-cloudagent-python.git#develop
+      dockerfile: ./docker/Dockerfile.run
+    ports:
+      - 8020-8021:8020-8021
+    networks:
+      - acapy
+    depends_on:
+      - postgres
+    entrypoint: ["./wait-for-it.sh", "postgres:5432", "--", "aca-py",
+                 "start",
+                 "--admin", "0.0.0.0", "8021",
+                 "--admin-insecure-mode",
+                 "--endpoint", "http://host.docker.internal:8020",
+                 "--tails-server-base-url", "http://host.docker.internal:6543",
+                 "--storage-type", "indy",
+                 "--genesis-url", "http://host.docker.internal:9000/genesis",
+                 "--inbound-transport", "http_custodial", "0.0.0.0", "8020",
+                 "--outbound-transport", "http",
+                 "--label", "cloud.agent",
+                 "--seed", "000000000000000000000000Steward1",
+                 "--wallet-type", "indy",
+                 "--wallet-name", "admin",
+                 "--wallet-key", "admin.key",
+                 "--wallet-storage-type", "postgres_storage",
+                 "--wallet-storage-config", "{\"url\":\"postgres:5432\",\"wallet_scheme\":\"MultiWalletSingleTableSharedPool\"}",
+                 "--wallet-storage-creds", "{\"account\":\"postgres\",\"password\":\"mysecretpassword\",\"admin_account\":\"postgres\",\"admin_password\":\"mysecretpassword\"}",
+                 "--auto-accept-invites",
+                 "--auto-accept-requests",
+                 "--auto-ping-connection",
+                 "--auto-respond-credential-request",
+                 "--auto-store-credential",
+                 "--auto-verify-presentation",
+                 "--auto-respond-messages",
+                 "--preserve-exchange-records",
+                 "--log-level", "debug",
+                 "--trace",
+                 "--trace-target", "log",
+                 "--trace-tag", "agent.events",
+                 "--trace-label", "agent.trace",
+                 "--plugin", "aries_cloudagent.wallet_handler"]
+  vcxagency-base:
+    build:
+      context: https://github.com/AbsaOSS/vcxagencynode.git#master
+      dockerfile: ./vcxagency-base/vcxagency-base.Dockerfile
+    image: vcxagency-base:1.15.0
+  vcxagency-node:
+    build:
+      context: https://github.com/AbsaOSS/vcxagencynode.git#master
+      dockerfile: ./vcxagency-node/Dockerfile
+    image: vcxagency-node:0.1.2
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    environment:
+      - LOG_LEVEL=debug
+      - LOG_ENABLE_INDYSDK=false
+      - LOG_JSON_TO_CONSOLE=false
+      - SERVER_PORT=8080
+      - SERVER_MAX_REQUEST_SIZE_KB=300
+      - SERVER_ENABLE_TLS=false
+      - CERTIFICATE_PATH=
+      - CERTIFICATE_AUTHORITY_PATH=
+      - CERTIFICATE_KEY_PATH=
+
+      - AGENCY_WALLET_NAME=vcxagency-node
+      - AGENCY_DID=VsKV7grR1BUE29mG2Fm2kX
+      - AGENCY_SEED_SECRET=0000000000000000000000000Forward
+      - AGENCY_WALLET_KEY_SECRET=01234567890123456789
+
+      - PG_STORE_HOST=host.docker.internal
+      - PG_STORE_PORT=5432
+      - PG_STORE_ACCOUNT=postgres
+      - PG_STORE_PASSWORD_SECRET=mysecretpassword
+      - PG_STORE_DATABASE=agency-storage
+
+      - PG_WALLET_ACCOUNT=postgres
+      - PG_WALLET_PASSWORD_SECRET=mysecretpassword
+      - PG_WALLET_ADMIN_ACCOUNT=postgres
+      - PG_WALLET_ADMIN_PASSWORD_SECRET=mysecretpassword
+
+      - PG_WALLET_URL=host.docker.internal:5432
+      - PG_WALLET_MIN_IDLE_COUNT=0
+      - PG_WALLET_MAX_CONNECTIONS=90
+      - PG_WALLET_CONNECTION_TIMEOUT_MINS=30
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+    ports:
+      - '5432:5432'
+    networks:
+      - acapy
+
+networks:
+  acapy:

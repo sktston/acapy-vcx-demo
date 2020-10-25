@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  node-alice:
+    build:
+      context: ..
+      dockerfile: ./node-alice/ubuntu_1604.Dockerfile
+    image: node-alice:1.0.0
+    ports:
+      - 7203:7203
+    networks:
+      - acapy
+
+networks:
+  acapy:

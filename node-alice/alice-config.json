@@ -1,0 +1,11 @@
+{
+  "agencyURL": "http://host.docker.internal:8080",
+  "inviteIssuerURL": "http://host.docker.internal:8022/invitation",
+  "inviteVerifierURL": "http://host.docker.internal:8032/invitation",
+
+  "postgresql": false,
+  "commMethod": "aries",
+
+  "appLogLevel": "verbose",
+  "vcxLogLevel": "false"
+}
