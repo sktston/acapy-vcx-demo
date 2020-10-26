@@ -93,23 +93,25 @@ USER indy
 
 WORKDIR /home/indy
 
-#COPY --from=BASE /var/lib/dpkg/info /var/lib/dpkg/info
-#COPY --from=BASE /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
-#COPY --from=BASE /usr/local /usr/local
+COPY --from=BASE /var/lib/dpkg/info /var/lib/dpkg/info
+COPY --from=BASE /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
+COPY --from=BASE /usr/local /usr/local
 
 COPY --from=BASE /usr/lib/libindy.so /usr/lib/libindy.so
 #COPY --from=BASE /usr/lib/libindystrgpostgres.so /usr/lib/libindystrgpostgres.so
 COPY --from=BASE /usr/lib/libnullpay.so /usr/lib/libnullpay.so
 COPY --from=BASE /usr/lib/libvcx.so /usr/lib/libvcx.so
 
-USER indy
+USER root
 # RUN groupadd -g 1001 app && \
 #    useradd -r -u 1001 -g app app
 
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN apt-get install -y nodejs
 
+#USER indy
 # WORKDIR /home/app/
+WORKDIR /home/indy/
 COPY ./ ./
 RUN npm install
 RUN npm run compile
