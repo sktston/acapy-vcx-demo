@@ -217,3 +217,9 @@ node-alice_1  | [10-26 01:27:46] [verbose]: ------------------------------------
 node-alice_node-alice_1 exited with code 0
 ```
  
+ 
+## To do
+
+For compatibility test with the latest library, This demo use latest `libindy` and `libvcx` source-code compile when docker builds. This part will be optimized in the future.
+So it takes a long time because of this issue
+<br> We plan to optimize in the future.
