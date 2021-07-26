@@ -9,7 +9,7 @@ require (
 	github.com/go-playground/validator/v10 v10.3.0
 	github.com/montanaflynn/stats v0.6.3
 	github.com/smartystreets/goconvey v1.6.4 // indirect
-	github.com/tidwall/gjson v1.6.0
+	github.com/tidwall/gjson v1.6.5
 	github.com/withmandala/go-log v0.1.0
 	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899 // indirect
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
